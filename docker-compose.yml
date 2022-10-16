@@ -1,0 +1,16 @@
+version: "2"
+services:
+  certbot:
+    image: certbot/dns-cloudflare
+    container_name: certbot
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Vienna
+    volumes:
+      - "${APP_DIR}/etc-letsencrypt:/etc/letsencrypt"
+      - "${APP_DIR}/var-lib-letsencrypt:/var/lib/letsencrypt"
+      - "${APP_DIR}/var-log-letsencrypt:/var/log/letsencrypt" # debugging
+      - "${APP_DIR}/cloudflare/cloudflare.ini:/etc/cloudflare.ini:ro" # set here dns_cloudflare_api_token
+    restart: "no"
+    command: "certonly --dns-cloudflare --dns-cloudflare-credentials /etc/cloudflare.ini -m ${CLOUDFLARE_EMAIL} --agree-tos --no-eff-email -d ${CERT_DOMAIN}"
